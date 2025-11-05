@@ -1,0 +1,24 @@
+# Quartus build folders / mac folders
+__MACOSX/
+db/
+incremental_db/
+output_files/
+simulation/
+
+# Generated files
+*.rpt
+*.summary
+*.smsg
+*.jdi
+*.done
+*.sof
+*.pin
+*.sld
+*.qdf
+*.bak
+*.qws
+*_dump.txt
+*.cdf
+
+.DS_Store
+*.zip
