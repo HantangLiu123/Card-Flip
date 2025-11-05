@@ -18,7 +18,6 @@ module mouse (clock, reset, mouse_x, mouse_y, left_button, PS2_CLK, PS2_DAT);
 	
 	// register for the packets
 	reg [7:0] packet_0, packet_1, packet_2;
-	reg done;
 	
 	wire [9:0] next_x;
 	wire [8:0] next_y;
@@ -40,33 +39,43 @@ module mouse (clock, reset, mouse_x, mouse_y, left_button, PS2_CLK, PS2_DAT);
 		endcase
 	end
 	
+	// done of a pakcet cycle
+	wire done;
+	assign done = (current_s == recieve_2) && mouse_data_en;
+	
+	// wires for cal_coor
+	wire [7:0] info_0, info_1, info_2;
+	assign info_0 = (current_s == recieve_0 && mouse_data_en && mouse_data[3]) ? mouse_data : packet_0;
+	assign info_1 = (current_s == recieve_1 && mouse_data_en) ? mouse_data : packet_1;
+	assign info_2 = (current_s == recieve_2 && mouse_data_en) ? mouse_data : packet_2;
+	
 	always @(posedge clock)
-		if (reset)
+		if (reset) begin
 			current_s <= recieve_0;
-		else
+			packet_0 <= 8'b0;
+			packet_1 <= 8'b0;
+			packet_2 <= 8'b0;
+		end else begin
 			current_s <= next_s;
 			
-	// recieve the packets
-	always @(*) begin
-		done = 1'b0;
-		
-		case (current_s)
-			recieve_0: if (mouse_data_en && mouse_data[3]) packet_0 = mouse_data;
-			recieve_1: if (mouse_data_en) packet_1 = mouse_data;
-			recieve_2: if (mouse_data_en) begin packet_2 = mouse_data; done = 1'b1; end
-			default: begin done = 1'bx; packet_0 = 8'bxxxxxxxx; packet_1 = 8'bxxxxxxxx; packet_2 = 8'bxxxxxxxx; end
-		endcase
-	end
-	
+			if (current_s == recieve_0 && mouse_data_en && mouse_data[3])
+				packet_0 <= mouse_data;
+			else if (current_s == recieve_1 && mouse_data_en)
+				packet_1 <= mouse_data;
+			else if (current_s == recieve_2 && mouse_data_en)
+				packet_2 <= mouse_data;
+		end
+			
 	// calculate the next coordinates
 	cal_coor CAL (
-		.packet_0(packet_0),
-		.packet_1(packet_1),
-		.packet_2(packet_2),
+		.packet_0(info_0),
+		.packet_1(info_1),
+		.packet_2(info_2),
 		.cur_x(mouse_x),
 		.cur_y(mouse_y),
 		.next_x(next_x),
-		.next_y(next_y)
+		.next_y(next_y),
+		.left_button(left_button)
 	);
 	
 	always @(posedge clock)
@@ -80,7 +89,7 @@ module mouse (clock, reset, mouse_x, mouse_y, left_button, PS2_CLK, PS2_DAT);
 		
 	PS2_Controller PS2C (
 		.CLOCK_50(clock),
-		.reset(resetn),
+		.reset(reset),
 		.PS2_CLK(PS2_CLK),
 		.PS2_DAT(PS2_DAT),
 		.received_data(mouse_data),
@@ -91,14 +100,15 @@ module mouse (clock, reset, mouse_x, mouse_y, left_button, PS2_CLK, PS2_DAT);
 endmodule
 
 // this module reset/calculate the coordinates of the mouse
-module cal_coor (packet_0, packet_1, packet_2, cur_x, cur_y, next_x, next_y);
+module cal_coor (packet_0, packet_1, packet_2, cur_x, cur_y, next_x, next_y, left_button);
 	input [7:0] packet_0, packet_1, packet_2;
 	input [9:0] cur_x;
 	input [9:0] cur_y;
 	output reg [9:0] next_x;
 	output reg [8:0] next_y;
+	output left_button;
 	
-	wire x_overflow, y_overflow, x_sign, y_sign, left_button;
+	wire x_overflow, y_overflow, x_sign, y_sign;
 	wire [7:0] dx, dy;
 	
 	integer temp_x, temp_y;

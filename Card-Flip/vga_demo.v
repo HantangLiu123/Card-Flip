@@ -186,7 +186,7 @@ module vga_demo(CLOCK_50, SW, KEY, LEDR, PS2_CLK, PS2_DAT, HEX5, HEX4, HEX3, HEX
 					 
 	 mouse MOUSE (
 		.clock(CLOCK_50),
-		.resetn(~KEY[0]),
+		.reset(~KEY[0]),
 		.mouse_x(mouse_x),
 		.mouse_y(mouse_y),
 		.left_button(left_button),
