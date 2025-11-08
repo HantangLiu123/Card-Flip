@@ -3,8 +3,8 @@
 module vga_demo16(
     input wire CLOCK_50,
     input wire [9:0]  SW,
-    input wire [3:0]  KEY,      
-    input flip; 
+    input wire [3:0]  KEY,   
+    input wire flip,
 
     // VGA
     output wire [7:0] VGA_R,
@@ -51,25 +51,25 @@ module vga_demo16(
     wire [N_OBJ * COLOR_DEPTH - 1:0] inst_color_bus;  // 每路 COLOR_DEPTH 位    
 
     // === 16 object parameters (4x4 grid, only IDX/IX/IY) ===
-    parameter int IDX1  = 0,  IX1  = START_X + 0*GAP_X, IY1  = START_Y + 0*GAP_Y;
-    parameter int IDX2  = 1,  IX2  = START_X + 1*GAP_X, IY2  = START_Y + 0*GAP_Y;
-    parameter int IDX3  = 2,  IX3  = START_X + 2*GAP_X, IY3  = START_Y + 0*GAP_Y;
-    parameter int IDX4  = 3,  IX4  = START_X + 3*GAP_X, IY4  = START_Y + 0*GAP_Y;
+    parameter integer IDX1  = 0,  IX1  = START_X + 0*GAP_X, IY1  = START_Y + 0*GAP_Y;
+    parameter integer IDX2  = 1,  IX2  = START_X + 1*GAP_X, IY2  = START_Y + 0*GAP_Y;
+    parameter integer IDX3  = 2,  IX3  = START_X + 2*GAP_X, IY3  = START_Y + 0*GAP_Y;
+    parameter integer IDX4  = 3,  IX4  = START_X + 3*GAP_X, IY4  = START_Y + 0*GAP_Y;
 
-    parameter int IDX5  = 4,  IX5  = START_X + 0*GAP_X, IY5  = START_Y + 1*GAP_Y;
-    parameter int IDX6  = 5,  IX6  = START_X + 1*GAP_X, IY6  = START_Y + 1*GAP_Y;
-    parameter int IDX7  = 6,  IX7  = START_X + 2*GAP_X, IY7  = START_Y + 1*GAP_Y;
-    parameter int IDX8  = 7,  IX8  = START_X + 3*GAP_X, IY8  = START_Y + 1*GAP_Y;
+    parameter integer IDX5  = 4,  IX5  = START_X + 0*GAP_X, IY5  = START_Y + 1*GAP_Y;
+    parameter integer IDX6  = 5,  IX6  = START_X + 1*GAP_X, IY6  = START_Y + 1*GAP_Y;
+    parameter integer IDX7  = 6,  IX7  = START_X + 2*GAP_X, IY7  = START_Y + 1*GAP_Y;
+    parameter integer IDX8  = 7,  IX8  = START_X + 3*GAP_X, IY8  = START_Y + 1*GAP_Y;
 
-    parameter int IDX9  = 8,  IX9  = START_X + 0*GAP_X, IY9  = START_Y + 2*GAP_Y;
-    parameter int IDX10 = 9,  IX10 = START_X + 1*GAP_X, IY10 = START_Y + 2*GAP_Y;
-    parameter int IDX11 = 10, IX11 = START_X + 2*GAP_X, IY11 = START_Y + 2*GAP_Y;
-    parameter int IDX12 = 11, IX12 = START_X + 3*GAP_X, IY12 = START_Y + 2*GAP_Y;
+    parameter integer IDX9  = 8,  IX9  = START_X + 0*GAP_X, IY9  = START_Y + 2*GAP_Y;
+    parameter integer IDX10 = 9,  IX10 = START_X + 1*GAP_X, IY10 = START_Y + 2*GAP_Y;
+    parameter integer IDX11 = 10, IX11 = START_X + 2*GAP_X, IY11 = START_Y + 2*GAP_Y;
+    parameter integer IDX12 = 11, IX12 = START_X + 3*GAP_X, IY12 = START_Y + 2*GAP_Y;
 
-    parameter int IDX13 = 12, IX13 = START_X + 0*GAP_X, IY13 = START_Y + 3*GAP_Y;
-    parameter int IDX14 = 13, IX14 = START_X + 1*GAP_X, IY14 = START_Y + 3*GAP_Y;
-    parameter int IDX15 = 14, IX15 = START_X + 2*GAP_X, IY15 = START_Y + 3*GAP_Y;
-    parameter int IDX16 = 15, IX16 = START_X + 3*GAP_X, IY16 = START_Y + 3*GAP_Y;
+    parameter integer IDX13 = 12, IX13 = START_X + 0*GAP_X, IY13 = START_Y + 3*GAP_Y;
+    parameter integer IDX14 = 13, IX14 = START_X + 1*GAP_X, IY14 = START_Y + 3*GAP_Y;
+    parameter integer IDX15 = 14, IX15 = START_X + 2*GAP_X, IY15 = START_Y + 3*GAP_Y;
+    parameter integer IDX16 = 15, IX16 = START_X + 3*GAP_X, IY16 = START_Y + 3*GAP_Y;
     // === 16 object instances (4x4 grid) ===
     object #(
         .XOFFSET(IX1),
@@ -377,73 +377,73 @@ module vga_demo16(
 
 
 
-// ===== 调度器 =====
-parameter N = N_OBJ;
+	// ===== 调度器 =====
+	parameter N = N_OBJ;
 
-wire keypressed = ~KEY[1];                  // 例如 KEY1 的上升沿打一拍
-reg  [3:0] current_idx;        //四位数表示是第几个object
-reg  busy;
-reg  push;                         // 给当前 object 的 go 脉冲，发出调度信号
+	wire keypressed = ~KEY[1];                  // 例如 KEY1 的上升沿打一拍
+	reg  [3:0] current_idx;        //四位数表示是第几个object
+	reg  busy;
+	reg  push;                         // 给当前 object 的 go 脉冲，发出调度信号
 
-// 给每个实例的 go：只有 current_idx 那一路得到 1-cycle 脉冲
-reg [N-1:0] inst_go;
-integer i;
-always @(*) begin
-    for (i = 0; i < N; i = i + 1)
-        inst_go[i] = (push && (current_idx == i)) ? 1'b1 : 1'b0;    //二进制与十进制自动比较，决定哪个object被实例化
-end
+	// 给每个实例的 go：只有 current_idx 那一路得到 1-cycle 脉冲
+	reg [N-1:0] inst_go;
+	integer i;
+	always @(*) begin
+		 for (i = 0; i < N; i = i + 1)
+			  inst_go[i] = (push && (current_idx == i)) ? 1'b1 : 1'b0;    //二进制与十进制自动比较，决定哪个object被实例化
+	end
 
-// 简单 FSM：空闲→逐个绘制→结束
-always @(posedge CLOCK_50) begin
-    if(!Resetn) begin
-        busy <= 1'b0;
-        current_idx <= 4'b0000;
-        push <= 1'b0;
-    end 
-    else begin
-        push <= 1'b0;
-        if(!busy) begin
-            if (keypressed) begin
-                busy <= 1'b1;
-                current_idx <= 4'b0000;
-                push <= 1'b1;                 // 触发第 0 张
-            end
-        end 
-        else begin
-            // 等当前实例 done，再切到下一张
-            if (inst_done[current_idx]) begin   //自动转化为10进制
-                if(current_idx == N-1) begin
-                    busy <= 1'b0;             // 全部完成
-                end else begin
-                    current_idx <= current_idx + 1'b1;
-                    push <= 1'b1;             // 触发下一张
-                end
-            end
-        end
-    end
-end
+	// 简单 FSM：空闲→逐个绘制→结束
+	always @(posedge CLOCK_50) begin
+		 if(!Resetn) begin
+			  busy <= 1'b0;
+			  current_idx <= 4'b0000;
+			  push <= 1'b0;
+		 end 
+		 else begin
+			  push <= 1'b0;
+			  if(!busy) begin
+					if (keypressed) begin
+						 busy <= 1'b1;
+						 current_idx <= 4'b0000;
+						 push <= 1'b1;                 // 触发第 0 张
+					end
+			  end 
+			  else begin
+					// 等当前实例 done，再切到下一张
+					if (inst_done[current_idx]) begin   //自动转化为10进制
+						 if(current_idx == N-1) begin
+							  busy <= 1'b0;             // 全部完成
+						 end else begin
+							  current_idx <= current_idx + 1'b1;
+							  push <= 1'b1;             // 触发下一张
+						 end
+					end
+			  end
+		 end
+	end
 
-// ===== 复用器（把当前实例的写口接到 VGA） =====
-// 可变切片：把当前 idx 的 x/y/color 取出来
-wire [9:0] putin_x = inst_x_bus [current_idx * 10 +: 10];
-wire [8:0] putin_y = inst_y_bus [current_idx * 9 +: 9];
-wire [COLOR_DEPTH-1:0] putin_color = inst_color_bus[current_idx * COLOR_DEPTH +: COLOR_DEPTH];
-wire putin_plot = inst_write[current_idx];
+	// ===== 复用器（把当前实例的写口接到 VGA） =====
+	// 可变切片：把当前 idx 的 x/y/color 取出来
+	wire [9:0] putin_x = inst_x_bus [current_idx * 10 +: 10];
+	wire [8:0] putin_y = inst_y_bus [current_idx * 9 +: 9];
+	wire [COLOR_DEPTH-1:0] putin_color = inst_color_bus[current_idx * COLOR_DEPTH +: COLOR_DEPTH];
+	wire putin_write = inst_write[current_idx];
 
-vga_adapter myVGA (
-    .resetn(Resetn),
-    .clock(CLOCK_50),
-    .colour(putin_color),
-    .x(putin_x),
-    .y(putin_y),
-    .plot(putin_plot),
-    .VGA_R(VGA_R),
-    .VGA_G(VGA_G),
-    .VGA_B(VGA_B),
-    .VGA_HS(VGA_HS),
-    .VGA_VS(VGA_VS),
-    .VGA_CLK(VGA_CLK),
-    .VGA_BLANK_N(VGA_BLANK_N),
-    .VGA_SYNC_N(VGA_SYNC_N)
-);
+	vga_adapter myVGA (
+		 .resetn(Resetn),
+		 .clock(CLOCK_50),
+		 .color(putin_color),
+		 .x(putin_x),
+		 .y(putin_y),
+		 .write(putin_write),
+		 .VGA_R(VGA_R),
+		 .VGA_G(VGA_G),
+		 .VGA_B(VGA_B),
+		 .VGA_HS(VGA_HS),
+		 .VGA_VS(VGA_VS),
+		 .VGA_CLK(VGA_CLK),
+		 .VGA_BLANK_N(VGA_BLANK_N),
+		 .VGA_SYNC_N(VGA_SYNC_N)
+	);
 endmodule
