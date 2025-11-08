@@ -18,39 +18,33 @@ module vga_demo16(
 );
     
     parameter RESOLUTION = "640x480"; 
-    parameter COLOR_DEPTH = 6;         // 与你的 vga_adapter 一致(3/6/9)
-    parameter OBJ_W = 40;        // 方块宽
-    parameter OBJ_H = 40;        // 方块高
+    parameter COLOR_DEPTH = 6;         // randomly pick one
+    parameter OBJ_W = 40;        // block width
+    parameter OBJ_H = 40;        // block height
     parameter ROWS = 4;
     parameter COLS = 4;
 
-    //==============================
-    // 复位与按键同步
-    //==============================
-    wire Resetn = KEY[0];  // 低有效复位：KEY[0]==1 时运行
 
-    //==============================
-    // 4×4 Object 阵列：每个 object 固定位置
-    // 我们实例化 16 个 object_static，但通过仲裁器依次让它们写显存
-    //==============================
+    wire Resetn = KEY[0];  
     
 
-    // 预先排布：起始坐标 + 间距
+    // starter, define start x,y and the gap between them
+    // use integer to do calculations
     parameter integer START_X = 70;
     parameter integer START_Y = 50;
     parameter integer GAP_X = 20; 
     parameter integer GAP_Y = 20;
 
-    // 为 16 个实例准备连接线（打包成总线数组）
+    // the bus contain all the wire that is needed for 16 objects
     parameter integer N_OBJ = ROWS * COLS;
 
     wire [N_OBJ - 1:0] inst_done;
     wire [N_OBJ - 1:0] inst_write;
-    wire [N_OBJ * 10 - 1:0] inst_x_bus;      // 每路 10 位
-    wire [N_OBJ * 9 - 1:0]  inst_y_bus;      // 每路 9 位
-    wire [N_OBJ * COLOR_DEPTH - 1:0] inst_color_bus;  // 每路 COLOR_DEPTH 位    
+    wire [N_OBJ * 10 - 1:0] inst_x_bus;      // 10 input for x
+    wire [N_OBJ * 9 - 1:0]  inst_y_bus;      // 9 input for y
+    wire [N_OBJ * COLOR_DEPTH - 1:0] inst_color_bus;  // COLOR_DEPTH is the num of input     
 
-    // === 16 object parameters (4x4 grid, only IDX/IX/IY) ===
+    // decompose for loop (row and column)
     parameter integer IDX1  = 0,  IX1  = START_X + 0*GAP_X, IY1  = START_Y + 0*GAP_Y;
     parameter integer IDX2  = 1,  IX2  = START_X + 1*GAP_X, IY2  = START_Y + 0*GAP_Y;
     parameter integer IDX3  = 2,  IX3  = START_X + 2*GAP_X, IY3  = START_Y + 0*GAP_Y;
@@ -70,7 +64,7 @@ module vga_demo16(
     parameter integer IDX14 = 13, IX14 = START_X + 1*GAP_X, IY14 = START_Y + 3*GAP_Y;
     parameter integer IDX15 = 14, IX15 = START_X + 2*GAP_X, IY15 = START_Y + 3*GAP_Y;
     parameter integer IDX16 = 15, IX16 = START_X + 3*GAP_X, IY16 = START_Y + 3*GAP_Y;
-    // === 16 object instances (4x4 grid) ===
+    // 16 object instances 
     object #(
         .XOFFSET(IX1),
         .YOFFSET(IY1),
@@ -84,7 +78,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX1 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX1 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX1 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX1 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX1]),
         .done(inst_done[IDX1])
@@ -103,7 +97,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX2 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX2 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX2 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX2 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX2]),
         .done(inst_done[IDX2])
@@ -122,7 +116,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX3 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX3 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX3 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX3 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX3]),
         .done(inst_done[IDX3])
@@ -141,7 +135,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX4 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX4 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX4 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX4 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX4]),
         .done(inst_done[IDX4])
@@ -160,7 +154,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX5 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX5 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX5 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX5 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX5]),
         .done(inst_done[IDX5])
@@ -179,7 +173,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX6 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX6 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX6 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX6 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX6]),
         .done(inst_done[IDX6])
@@ -198,7 +192,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX7 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX7 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX7 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX7 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX7]),
         .done(inst_done[IDX7])
@@ -217,7 +211,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX8 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX8 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX8 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX8 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX8]),
         .done(inst_done[IDX8])
@@ -236,7 +230,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX9 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX9 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX9 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX9 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX9]),
         .done(inst_done[IDX9])
@@ -255,7 +249,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX10 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX10 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX10 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX10 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX10]),
         .done(inst_done[IDX10])
@@ -274,7 +268,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX11 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX11 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX11 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX11 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX11]),
         .done(inst_done[IDX11])
@@ -293,7 +287,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX12 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX12 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX12 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX12 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX12]),
         .done(inst_done[IDX12])
@@ -312,7 +306,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX13 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX13 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX13 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX13 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX13]),
         .done(inst_done[IDX13])
@@ -331,7 +325,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX14 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX14 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX14 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX14 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX14]),
         .done(inst_done[IDX14])
@@ -350,7 +344,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX15 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX15 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX15 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX15 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX15]),
         .done(inst_done[IDX15])
@@ -369,7 +363,7 @@ module vga_demo16(
         .ps2_rec(1'b0),
         .dir(2'b00),
         .VGA_x(inst_x_bus[IDX16 * 10 +: 10]),
-        .VGA_y(inst_y_bus[IDX16 * 9  +: 9 ]),
+        .VGA_y(inst_y_bus[IDX16 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX16 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX16]),
         .done(inst_done[IDX16])
@@ -377,23 +371,21 @@ module vga_demo16(
 
 
 
-	// ===== 调度器 =====
+	// display 16 objects in sequenses
 	parameter N = N_OBJ;
 
-	wire keypressed = ~KEY[1];                  // 例如 KEY1 的上升沿打一拍
-	reg  [3:0] current_idx;        //四位数表示是第几个object
+	wire keypressed = ~KEY[1];                  
+	reg  [3:0] current_idx;        // 4 digit num represent 16 objects
 	reg  busy;
-	reg  push;                         // 给当前 object 的 go 脉冲，发出调度信号
+	reg  push;                         // sign for go, go for printing next oject
 
-	// 给每个实例的 go：只有 current_idx 那一路得到 1-cycle 脉冲
-	reg [N-1:0] inst_go;
+	reg [N-1:0] inst_go;                // 16 digit go sign
 	integer i;
 	always @(*) begin
 		 for (i = 0; i < N; i = i + 1)
-			  inst_go[i] = (push && (current_idx == i)) ? 1'b1 : 1'b0;    //二进制与十进制自动比较，决定哪个object被实例化
+			  inst_go[i] = (push && (current_idx == i)) ? 1'b1 : 1'b0;    // if push and is the corresponding object
 	end
 
-	// 简单 FSM：空闲→逐个绘制→结束
 	always @(posedge CLOCK_50) begin
 		 if(!Resetn) begin
 			  busy <= 1'b0;
@@ -406,25 +398,24 @@ module vga_demo16(
 					if (keypressed) begin
 						 busy <= 1'b1;
 						 current_idx <= 4'b0000;
-						 push <= 1'b1;                 // 触发第 0 张
+						 push <= 1'b1;                 // print the first one 
 					end
 			  end 
 			  else begin
-					// 等当前实例 done，再切到下一张
-					if (inst_done[current_idx]) begin   //自动转化为10进制
+					// if current one is done, then move to next one
+					if (inst_done[current_idx]) begin   // if this object is done
 						 if(current_idx == N-1) begin
-							  busy <= 1'b0;             // 全部完成
+							  busy <= 1'b0;             // all done
 						 end else begin
 							  current_idx <= current_idx + 1'b1;
-							  push <= 1'b1;             // 触发下一张
+							  push <= 1'b1;             // reset the push to be one, next one can go
 						 end
 					end
 			  end
 		 end
 	end
 
-	// ===== 复用器（把当前实例的写口接到 VGA） =====
-	// 可变切片：把当前 idx 的 x/y/color 取出来
+	// pass down to VGA, use this to break down the whole bus
 	wire [9:0] putin_x = inst_x_bus [current_idx * 10 +: 10];
 	wire [8:0] putin_y = inst_y_bus [current_idx * 9 +: 9];
 	wire [COLOR_DEPTH-1:0] putin_color = inst_color_bus[current_idx * COLOR_DEPTH +: COLOR_DEPTH];
