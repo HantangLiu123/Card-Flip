@@ -30,10 +30,10 @@ module vga_demo16(
 
     // starter, define start x,y and the gap between them
     // use integer to do calculations
-    parameter integer START_X = 108;
-    parameter integer START_Y = 56;
-    parameter integer GAP_X = 56; 
-    parameter integer GAP_Y = 56;
+    parameter integer START_X = 156;
+    parameter integer START_Y = 77;
+    parameter integer GAP_X = 109; 
+    parameter integer GAP_Y = 109;
 	 parameter integer WIDTH_BIT = 6;
 	 parameter integer HEIGHT_BIT = 6;
 
@@ -513,7 +513,7 @@ module vga_demo16(
 	
 	// some memories
 	wire [WIDTH_BIT - 1 : 0] XC = mem_x_bus[current_idx * WIDTH_BIT +: WIDTH_BIT];
-	wire [HEIGHT_BIT - 1 : 0] YC = mem_y_bus[current_idx + HEIGHT_BIT +: HEIGHT_BIT];
+	wire [HEIGHT_BIT - 1 : 0] YC = mem_y_bus[current_idx * HEIGHT_BIT +: HEIGHT_BIT];
 	object_mem MEM1 ({YC,XC}, CLOCK_50, mem_color_bus[IDX1 * COLOR_DEPTH +: COLOR_DEPTH]);
       defparam MEM1.n = COLOR_DEPTH;
       defparam MEM1.Mn = WIDTH_BIT + HEIGHT_BIT;
