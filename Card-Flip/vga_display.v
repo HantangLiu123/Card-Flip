@@ -18,22 +18,24 @@ module vga_demo16(
 );
     
     parameter RESOLUTION = "640x480"; 
-    parameter COLOR_DEPTH = 6;         // randomly pick one
-    parameter OBJ_W = 40;        // block width
-    parameter OBJ_H = 40;        // block height
+    parameter COLOR_DEPTH = 9;         // randomly pick one
+    parameter OBJ_W = 64;        // block width
+    parameter OBJ_H = 64;        // block height
     parameter ROWS = 4;
     parameter COLS = 4;
 
 
     wire Resetn = KEY[0];  
-    
+	 
 
     // starter, define start x,y and the gap between them
     // use integer to do calculations
-    parameter integer START_X = 70;
-    parameter integer START_Y = 50;
-    parameter integer GAP_X = 20; 
-    parameter integer GAP_Y = 20;
+    parameter integer START_X = 108;
+    parameter integer START_Y = 56;
+    parameter integer GAP_X = 56; 
+    parameter integer GAP_Y = 56;
+	 parameter integer WIDTH_BIT = 6;
+	 parameter integer HEIGHT_BIT = 6;
 
     // the bus contain all the wire that is needed for 16 objects
     parameter integer N_OBJ = ROWS * COLS;
@@ -42,7 +44,11 @@ module vga_demo16(
     wire [N_OBJ - 1:0] inst_write;
     wire [N_OBJ * 10 - 1:0] inst_x_bus;      // 10 input for x
     wire [N_OBJ * 9 - 1:0]  inst_y_bus;      // 9 input for y
-    wire [N_OBJ * COLOR_DEPTH - 1:0] inst_color_bus;  // COLOR_DEPTH is the num of input     
+    wire [N_OBJ * COLOR_DEPTH - 1:0] inst_color_bus;  // COLOR_DEPTH is the num of input    
+	 reg [2:0] card_num;
+    wire [COLOR_DEPTH * 9 - 1 : 0] mem_color_bus;
+	 wire [WIDTH_BIT * 16 - 1 : 0] mem_x_bus;
+	 wire [HEIGHT_BIT * 16 - 1 : 0] mem_y_bus;
 
     // decompose for loop (row and column)
     parameter integer IDX1  = 0,  IX1  = START_X + 0*GAP_X, IY1  = START_Y + 0*GAP_Y;
@@ -65,18 +71,22 @@ module vga_demo16(
     parameter integer IDX15 = 14, IX15 = START_X + 2*GAP_X, IY15 = START_Y + 3*GAP_Y;
     parameter integer IDX16 = 15, IX16 = START_X + 3*GAP_X, IY16 = START_Y + 3*GAP_Y;
     // 16 object instances 
-    object #(
+    card #(
         .XOFFSET(IX1),
         .YOFFSET(IY1),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj1 (
+        .RESOLUTION("640x480")
+    ) card1 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX1]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX1]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX1 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX1 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX1 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX1 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX1 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -84,18 +94,22 @@ module vga_demo16(
         .done(inst_done[IDX1])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX2),
         .YOFFSET(IY2),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj2 (
+        .RESOLUTION("640x480")
+    ) card2 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX2]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX2]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX2 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX2 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX2 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX2 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX2 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -103,18 +117,22 @@ module vga_demo16(
         .done(inst_done[IDX2])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX3),
         .YOFFSET(IY3),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj3 (
+        .RESOLUTION("640x480")
+    ) card3 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX3]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX3]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX3 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX3 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX3 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX3 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX3 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -122,18 +140,22 @@ module vga_demo16(
         .done(inst_done[IDX3])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX4),
         .YOFFSET(IY4),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj4 (
+        .RESOLUTION("640x480")
+    ) card4 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX4]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX4]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX4 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX4 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX4 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX4 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX4 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -141,18 +163,22 @@ module vga_demo16(
         .done(inst_done[IDX4])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX5),
         .YOFFSET(IY5),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj5 (
+        .RESOLUTION("640x480")
+    ) card5 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX5]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX5]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX5 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX5 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX5 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX5 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX5 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -160,18 +186,22 @@ module vga_demo16(
         .done(inst_done[IDX5])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX6),
         .YOFFSET(IY6),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj6 (
+        .RESOLUTION("640x480")
+    ) card6 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX6]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX6]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX6 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX6 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX6 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX6 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX6 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -179,18 +209,22 @@ module vga_demo16(
         .done(inst_done[IDX6])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX7),
         .YOFFSET(IY7),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj7 (
+        .RESOLUTION("640x480")
+    ) card7 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX7]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX7]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX7 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX7 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX7 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX7 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX7 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -198,18 +232,22 @@ module vga_demo16(
         .done(inst_done[IDX7])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX8),
         .YOFFSET(IY8),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj8 (
+        .RESOLUTION("640x480")
+    ) card8 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX8]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX8]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX8 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX8 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX8 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX8 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX8 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -217,18 +255,22 @@ module vga_demo16(
         .done(inst_done[IDX8])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX9),
         .YOFFSET(IY9),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj9 (
+        .RESOLUTION("640x480")
+    ) card9 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX9]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX9]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX9 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX9 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX9 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX9 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX9 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -236,18 +278,22 @@ module vga_demo16(
         .done(inst_done[IDX9])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX10),
         .YOFFSET(IY10),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj10 (
+        .RESOLUTION("640x480")
+    ) card10 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX10]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX10]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX10 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX10 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX10 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX10 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX10 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -255,18 +301,22 @@ module vga_demo16(
         .done(inst_done[IDX10])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX11),
         .YOFFSET(IY11),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj11 (
+        .RESOLUTION("640x480")
+    ) card11 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX11]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX11]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX11 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX11 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX11 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX11 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX11 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -274,18 +324,22 @@ module vga_demo16(
         .done(inst_done[IDX11])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX12),
         .YOFFSET(IY12),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj12 (
+        .RESOLUTION("640x480")
+    ) card12 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX12]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX12]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX12 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX12 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX12 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX12 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX12 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -293,18 +347,22 @@ module vga_demo16(
         .done(inst_done[IDX12])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX13),
         .YOFFSET(IY13),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj13 (
+        .RESOLUTION("640x480")
+    ) card13 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX13]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX13]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX13 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX13 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX13 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX13 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX13 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -312,18 +370,22 @@ module vga_demo16(
         .done(inst_done[IDX13])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX14),
         .YOFFSET(IY14),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj14 (
+        .RESOLUTION("640x480")
+    ) card14 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX14]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX14]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX14 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX14 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX14 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX14 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX14 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -331,18 +393,22 @@ module vga_demo16(
         .done(inst_done[IDX14])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX15),
         .YOFFSET(IY15),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj15 (
+        .RESOLUTION("640x480")
+    ) card15 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX15]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX15]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX15 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX15 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX15 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX15 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX15 * COLOR_DEPTH +: COLOR_DEPTH]),
@@ -350,24 +416,29 @@ module vga_demo16(
         .done(inst_done[IDX15])
     );
 
-    object #(
+    card #(
         .XOFFSET(IX16),
         .YOFFSET(IY16),
+		  .xOBJ(WIDTH_BIT),
+		  .yOBJ(HEIGHT_BIT),
         .COLOR_DEPTH(COLOR_DEPTH),
-        .RESOLUTION("640x480"),
-        .INIT_FILE()
-    ) obj16 (
+        .RESOLUTION("640x480")
+    ) card16 (
         .Resetn(Resetn),
         .Clock(CLOCK_50),
-        .go(inst_go[IDX16]),
-        .ps2_rec(1'b0),
-        .dir(2'b00),
+        .draw(inst_go[IDX16]),
+		  .card_num(card_num),
+		  .show(1'b1),
+		  .obj_color(mem_color_bus),
+		  .XC(mem_x_bus[IDX16 * WIDTH_BIT +: WIDTH_BIT]),
+		  .YC(mem_y_bus[IDX16 * HEIGHT_BIT +: HEIGHT_BIT]),
         .VGA_x(inst_x_bus[IDX16 * 10 +: 10]),
         .VGA_y(inst_y_bus[IDX16 * 9 +: 9 ]),
         .VGA_color(inst_color_bus[IDX16 * COLOR_DEPTH +: COLOR_DEPTH]),
         .VGA_write(inst_write[IDX16]),
         .done(inst_done[IDX16])
     );
+
 
 
 
@@ -390,6 +461,7 @@ module vga_demo16(
 		 if(!Resetn) begin
 			  busy <= 1'b0;
 			  current_idx <= 4'b0000;
+			  card_num <= 3'b000;
 			  push <= 1'b0;
 		 end 
 		 else begin
@@ -406,6 +478,7 @@ module vga_demo16(
 					if (inst_done[current_idx]) begin   // if this object is done
 						 if(current_idx == N-1) begin
 							  busy <= 1'b0;             // all done
+							  card_num[0] <= ~card_num[0];
 						 end else begin
 							  current_idx <= current_idx + 1'b1;
 							  push <= 1'b1;             // reset the push to be one, next one can go
@@ -437,4 +510,17 @@ module vga_demo16(
 		 .VGA_BLANK_N(VGA_BLANK_N),
 		 .VGA_SYNC_N(VGA_SYNC_N)
 	);
+	
+	// some memories
+	wire [WIDTH_BIT - 1 : 0] XC = mem_x_bus[current_idx * WIDTH_BIT +: WIDTH_BIT];
+	wire [HEIGHT_BIT - 1 : 0] YC = mem_y_bus[current_idx + HEIGHT_BIT +: HEIGHT_BIT];
+	object_mem MEM1 ({YC,XC}, CLOCK_50, mem_color_bus[IDX1 * COLOR_DEPTH +: COLOR_DEPTH]);
+      defparam MEM1.n = COLOR_DEPTH;
+      defparam MEM1.Mn = WIDTH_BIT + HEIGHT_BIT;
+      defparam MEM1.INIT_FILE = "./MIF/thumb.mif";
+		  
+	object_mem MEM2 ({YC,XC}, CLOCK_50, mem_color_bus[IDX2 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM2.n = COLOR_DEPTH;
+		defparam MEM2.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM2.INIT_FILE = "./MIF/angry.mif";
 endmodule

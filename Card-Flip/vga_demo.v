@@ -166,7 +166,7 @@ module vga_demo(CLOCK_50, SW, KEY, LEDR, PS2_CLK, PS2_DAT, HEX5, HEX4, HEX3, HEX
         defparam O1.COLOR_DEPTH = COLOR_DEPTH;
 		  defparam O1.xOBJ = 6;
 		  defparam O1.yOBJ = 6;
-		  defparam O1.INIT_FILE = "./MIF/laugh.mif";
+		  defparam O1.INIT_FILE = "./MIF/thumb.mif";
 
     // instantiate object 2
     object O2 (Resetn, CLOCK_50, KEY2, !object_sel & step, O2_dir, O2_x, O2_y,

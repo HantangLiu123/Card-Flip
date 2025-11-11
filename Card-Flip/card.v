@@ -10,18 +10,13 @@ module card (Resetn, Clock, draw, card_num, show, obj_color, XC, YC, VGA_x, VGA_
                                 ((RESOLUTION == "320x240") ? 160 : 80);
     parameter YOFFSET = (RESOLUTION == "640x480") ? 240 : 
                                 ((RESOLUTION == "320x240") ? 120 : 60);
-    parameter LEFT = 2'b00 /*'a'*/, RIGHT = 2'b11/*'s'*/, UP = 2'b01/*'w'*/, DOWN = 2'b10/*'z'*/;
     parameter xOBJ = 4, yOBJ = 4;   // object size is 2^xOBJ x 2^yOBJ
     parameter BOX_SIZE_X = 1 << xOBJ;
     parameter BOX_SIZE_Y = 1 << yOBJ;
     parameter Mn = xOBJ + yOBJ; // address lines needed for the object memory
-    parameter INIT_FILE = 
-            (COLOR_DEPTH == 9) ? "./MIF/object_mem_16_16_9.mif" : 
-                ((COLOR_DEPTH == 6) ?  "./MIF/object_mem_16_16_6.mif" : 
-                "./MIF/object_mem_16_16_3.mif");
 
     // state names for the FSM that draws the object
-    parameter idle = 2'b00, draw_row = 2'b01, next_row = 2'b10, done_draw = 2'b11
+    parameter idle = 2'b00, draw_row = 2'b01, next_row = 2'b10, done_draw = 2'b11;
     
     input wire Resetn, Clock;
     input wire draw;                           // for enabling drawing
@@ -76,7 +71,7 @@ module card (Resetn, Clock, draw, card_num, show, obj_color, XC, YC, VGA_x, VGA_
         write = 1'b0; 
         Lxc = 1'b0; Lyc = 1'b0; Exc = 1'b0; Eyc = 1'b0; done = 1'b0;
         case (y_Q)
-            idle: begin Lxc = 1'b1; Lyz = 1'b1; end
+            idle: begin Lxc = 1'b1; Lyc = 1'b1; end
 				draw_row: begin Exc = 1'b1; write = 1'b1; end
 				next_row: begin Lxc = 1'b1; Eyc = 1'b1; end
 				done_draw: done = 1'b1;
@@ -89,13 +84,6 @@ module card (Resetn, Clock, draw, card_num, show, obj_color, XC, YC, VGA_x, VGA_
             y_Q <= 2'b0;
         else
             y_Q <= Y_D;
-
-    // read a pixel color from the object memory. We can use {YC,XC} because the x dimension
-    // of the object memory is a power of 2
-    object_mem U6 ({YC,XC}, Clock, obj_color);
-        defparam U6.n = COLOR_DEPTH;
-        defparam U6.Mn = xOBJ + yOBJ;
-        defparam U6.INIT_FILE = INIT_FILE;
 
     // compute the (x,y) location of the current pixel to be drawn (or erased). We subtract
     // half the object's width and height because we want the objec to be centered at its 
