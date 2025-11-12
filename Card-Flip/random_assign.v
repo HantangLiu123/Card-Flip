@@ -143,7 +143,8 @@ module random8 #(parameter SEED = 16'hDEAD) (
             value <= 3'd0;
             a <= 3'd1;  // always make sure a is a odd number
             b <= 3'd0;
-        end else begin
+        end 
+        else begin
             if (start && !running) begin
                 a <= a_next;
                 b <= b_next;
@@ -187,7 +188,8 @@ module random16 #(parameter SEED = 16'hBEEF) (
             value <= 4'd0;
             a <= 4'd1;
             b <= 4'd0;
-        end else begin
+        end 
+        else begin
             if (start && !running) begin
                 a <= a_next;
                 b <= b_next;
