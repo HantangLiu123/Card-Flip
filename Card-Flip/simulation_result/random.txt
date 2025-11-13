@@ -1,16 +1,16 @@
-add wave *
+# add wave *
 # view structure
 # .main_pane.structure.interior.cs.body.struct
 # view signals
 # .main_pane.objects.interior.cs.body.tree
 # run -all
-# Done at time 550000, results: 3, 3, 6, 6, 1, 1, 4, 4, 7, 7, 2, 2, 5, 5, 0, 0
-# Done at time 1190000, results: 4, 1, 7, 4, 2, 7, 5, 2, 0, 5, 3, 0, 6, 3, 1, 6
-# Done at time 1830000, results: 5, 0, 4, 7, 3, 0, 2, 5, 1, 4, 0, 3, 7, 2, 0, 1
-# Done at time 2470000, results: 5, 4, 2, 1, 6, 6, 4, 3, 1, 0, 6, 5, 3, 2, 0, 0
-# Done at time 3110000, results: 3, 1, 4, 2, 5, 3, 6, 4, 7, 5, 0, 6, 1, 0, 2, 0
-# Done at time 3750000, results: 4, 3, 1, 0, 7, 5, 3, 2, 0, 7, 5, 4, 2, 1, 7, 0
-# Done at time 4390000, results: 0, 5, 1, 6, 2, 7, 3, 0, 6, 1, 5, 2, 6, 3, 7, 6
-# Done at time 5030000, results: 7, 4, 4, 1, 1, 6, 6, 3, 3, 0, 0, 5, 5, 0, 4, 7
-# Done at time 5670000, results: 5, 7, 4, 6, 3, 5, 2, 4, 1, 3, 2, 2, 7, 1, 6, 0
-# Done at time 6310000, results: 5, 1, 2, 6, 7, 0, 4, 0, 1, 5, 6, 2, 0, 7, 0, 4
+# Done at time 570000, results: 0, 3, 3, 6, 6, 1, 1, 4, 4, 7, 7, 2, 2, 5, 5, 0
+# Done at time 1230000, results: 5, 0, 4, 7, 3, 6, 2, 5, 1, 4, 0, 3, 7, 2, 6, 1
+# Done at time 1890000, results: 4, 2, 1, 7, 6, 4, 3, 1, 0, 6, 5, 3, 2, 0, 7, 5
+# Done at time 2550000, results: 3, 5, 0, 2, 5, 7, 2, 4, 7, 1, 4, 6, 1, 3, 6, 0
+# Done at time 3210000, results: 2, 7, 5, 2, 0, 5, 3, 0, 6, 3, 1, 6, 4, 1, 7, 4
+# Done at time 3870000, results: 6, 7, 3, 4, 0, 1, 5, 6, 2, 3, 7, 0, 4, 5, 1, 2
+# Done at time 4530000, results: 5, 3, 4, 2, 3, 1, 2, 0, 1, 7, 0, 6, 7, 5, 6, 4
+# Done at time 5190000, results: 5, 6, 6, 7, 7, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5
+# Done at time 5850000, results: 6, 0, 5, 7, 4, 6, 3, 5, 2, 4, 1, 3, 0, 2, 7, 1
+# Done at time 6510000, results: 5, 2, 6, 3, 7, 4, 0, 5, 1, 6, 2, 7, 3, 0, 4, 1

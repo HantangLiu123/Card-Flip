@@ -145,18 +145,18 @@ module random8 #(parameter SEED = 16'hDEAD) (
             b <= 3'd0;
         end 
         else begin
+				valid <= 1'b0;
             if (start && !running) begin
                 a <= a_next;
                 b <= b_next;
                 k <= 3'd0;
                 running <= 1'b1;
-                valid <= 1'b1;
             end 
             else if (running) begin
                 value <= (a * k + b) % 8;
+					 valid <= 1'b1;
                 if (k == 3'd7) begin
                     running <= 1'b0;
-                    valid <= 1'b0;
                 end
                 k <= k + 3'd1;
             end
@@ -190,19 +190,18 @@ module random16 #(parameter SEED = 16'hBEEF) (
             b <= 4'd0;
         end 
         else begin
+				valid <= 1'b0;
             if (start && !running) begin
                 a <= a_next;
                 b <= b_next;
                 k <= 4'd0;
                 running <= 1'b1;
-                valid <= 1'b1;
             end else if (running) begin
                 // y = (a*k + b) mod 16
                 value <= (a * k + b) % 16;
-
+					 valid <= 1'b1;
                 if (k == 4'd15) begin
                     running <= 1'b0;
-                    valid <= 1'b0;
                 end
                 k <= k + 4'd1;
             end
