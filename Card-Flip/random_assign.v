@@ -1,20 +1,20 @@
-module random_assign(input clk, input reset, input [3:0]KEY, output reg [47:0]random_num, output reg done);
-    recieve8_and_16 myrecieve(.clk(clk), .reset(reset), .start(~KEY[1]), .map(random_num), .done(done));
+module random_assign(input clk, input resetn, input start, output [0:47]random_num, output done);
+    recieve8_and_16 myrecieve(.clk(clk), .resetn(resetn), .start(start), .map(random_num), .done(done));
     
 endmodule
 
 module recieve8_and_16(
     input  wire clk,
-    input  wire reset,       
+    input  wire resetn,       
     input  wire start,         
-    output reg [47:0] map,  
+    output reg [0:47] map,  
     output reg done        
 );
     wire [2:0]value8;
     wire valid8, valid16;
     wire [3:0]value16;
-    random8 myrand8(.clk(clk), .reset(reset), .start(start), .value(value8), .valid(valid8));
-    random16 myrand16(.clk(clk), .reset(reset), .start(start), .value(value16), .valid(valid16));
+    random8 myrand8(.clk(clk), .resetn(resetn), .start(start), .value(value8), .valid(valid8));
+    random16 myrand16(.clk(clk), .resetn(resetn), .start(start), .value(value16), .valid(valid16));
 
 
     reg [63:0] buf16;    
@@ -31,7 +31,7 @@ module recieve8_and_16(
 
     parameter START = 2'd0, STORE = 2'd1, ASSIGN = 2'd2, DONE = 2'd3;
     always@(posedge clk)begin
-        if(!reset)begin
+        if(!resetn)begin
             map <= 48'd0;
             done <= 1'b0;
             buf8 <= 24'd0;
@@ -42,7 +42,7 @@ module recieve8_and_16(
             state <= START;
         end
         else begin
-            done <= 1'b0;
+				done <= 1'b0;
             case (state)
                 START: begin
                     if(start) begin
@@ -101,7 +101,7 @@ endmodule
 
 
 module lfsr_fib_16 #(parameter INITIAL_SEED = 16'hDEAD) (  // change the initial seed when using the model, #(.INITIAL_SEED(16'hDEAD))
-    input wire reset,
+    input wire resetn,
     input wire clk,
     output reg [15:0] seed
 );
@@ -109,7 +109,7 @@ module lfsr_fib_16 #(parameter INITIAL_SEED = 16'hDEAD) (  // change the initial
     assign next_bit = ((seed[15] ^ seed[13]) ^ seed[12]) ^ seed[10];
 
     always @(posedge clk) begin
-        if(!reset)begin
+        if(!resetn)begin
             seed <= INITIAL_SEED;
         end
         else begin
@@ -121,22 +121,22 @@ endmodule
 
 module random8 #(parameter SEED = 16'hDEAD) (
     input wire clk,
-    input wire reset,      // 低有效复位
+    input wire resetn,      // 低有效复位
     input wire start,        // 拉高 1 拍启动一轮
     output reg [2:0]value,  // 当前输出（0..7）
     output reg valid        // 一轮输出期间恒为 1
 );
     wire [15:0] seed;
-    lfsr_fib_16 #(.INITIAL_SEED(SEED)) mylfsr (.clk(clk), .reset(reset), .seed(seed));
+    lfsr_fib_16 #(.INITIAL_SEED(SEED)) mylfsr (.clk(clk), .resetn(resetn), .seed(seed));
 
     reg [2:0] a, b, k;
-    reg running;
+	 reg running;
 
     wire [2:0] a_next = {seed[2:1], 1'b1};      // a must be odd num
     wire [2:0] b_next = seed[5:3];              // make an offset to prevent the first(k:0-7) or the last(k:1-8) always be zero 
 
     always @(posedge clk) begin
-        if (!reset) begin
+        if (!resetn) begin
             running <= 1'b0;
             k <= 3'd0;
             valid <= 1'b0;
@@ -166,22 +166,22 @@ endmodule
 
 module random16 #(parameter SEED = 16'hBEEF) (
     input wire clk,
-    input wire reset,      
+    input wire resetn,      
     input wire start,         
     output reg [3:0] value,  
-    output reg valid        
+    output reg valid
 );
     wire [15:0]seed;
-    lfsr_fib_16 #(.INITIAL_SEED(SEED)) mylfsr (.clk(clk), .reset(reset), .seed(seed));
+    lfsr_fib_16 #(.INITIAL_SEED(SEED)) mylfsr (.clk(clk), .resetn(resetn), .seed(seed));
 
     reg [3:0] a, b, k;
-    reg running;
+	 reg running;
 
     wire [3:0]a_next = {seed[3:1], 1'b1};  
     wire [3:0]b_next = seed[7:4];
 
     always @(posedge clk) begin
-        if (!reset) begin
+        if (!resetn) begin
             running <= 1'b0;
             k <= 4'd0;
             valid <= 1'b0;
