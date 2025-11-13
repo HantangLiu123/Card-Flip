@@ -1,3 +1,37 @@
+module random_start_ver(input clk, input resetn, input start, output [0:47]random_num);
+    wire done;
+    wire newstart;
+    random_assign myrandass(.clk(clk), .resetn(resetn), .start(newstart), .random_num(random_num), .done(done));
+    modify_start mymodify(.clk(clk), .resetn(resetn), .start(start), .done(done), .newstart(newstart));
+endmodule
+
+module modify_start(input clk, input resetn, input start, input done, output reg newstart);
+    // 必须done才能输出
+    reg [8:0] Q;
+    always @(posedge clk)
+    begin
+        if(!resetn)
+            Q <= 9'b0;
+        else if(Q == 9'd20)
+            Q <= 9'b0;
+        else
+            Q <= Q + 1;
+    end
+    always @(posedge clk)
+    begin
+        if(!resetn)begin
+            newstart <= 1'b0;
+        end
+        else if(start && (Q == 9'd10) && done)begin
+            newstart <= 1'b1;
+        end
+        else begin
+            newstart <= 1'b0;
+        end
+    end
+    
+endmodule
+
 module random_assign(input clk, input resetn, input start, output [0:47]random_num, output done);
     recieve8_and_16 myrecieve(.clk(clk), .resetn(resetn), .start(start), .map(random_num), .done(done));
     
