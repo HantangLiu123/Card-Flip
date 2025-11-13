@@ -99,7 +99,6 @@ module recieve8_and_16(
 
 endmodule
 
-
 module lfsr_fib_16 #(parameter INITIAL_SEED = 16'hDEAD) (  // change the initial seed when using the model, #(.INITIAL_SEED(16'hDEAD))
     input wire resetn,
     input wire clk,
@@ -145,7 +144,11 @@ module random8 #(parameter SEED = 16'hDEAD) (
             b <= 3'd0;
         end 
         else begin
+<<<<<<< HEAD
 				valid <= 1'b0;
+=======
+            valid <= 1'b0;
+>>>>>>> 191b1c7 (fix)
             if (start && !running) begin
                 a <= a_next;
                 b <= b_next;
@@ -154,7 +157,11 @@ module random8 #(parameter SEED = 16'hDEAD) (
             end 
             else if (running) begin
                 value <= (a * k + b) % 8;
+<<<<<<< HEAD
 					 valid <= 1'b1;
+=======
+                valid <= 1'b1;
+>>>>>>> 191b1c7 (fix)
                 if (k == 3'd7) begin
                     running <= 1'b0;
                 end
@@ -190,7 +197,11 @@ module random16 #(parameter SEED = 16'hBEEF) (
             b <= 4'd0;
         end 
         else begin
+<<<<<<< HEAD
 				valid <= 1'b0;
+=======
+            valid <= 1'b0;;
+>>>>>>> 191b1c7 (fix)
             if (start && !running) begin
                 a <= a_next;
                 b <= b_next;
@@ -199,7 +210,11 @@ module random16 #(parameter SEED = 16'hBEEF) (
             end else if (running) begin
                 // y = (a*k + b) mod 16
                 value <= (a * k + b) % 16;
+<<<<<<< HEAD
 					 valid <= 1'b1;
+=======
+                valid <= 1'b1;
+>>>>>>> 191b1c7 (fix)
                 if (k == 4'd15) begin
                     running <= 1'b0;
                 end
