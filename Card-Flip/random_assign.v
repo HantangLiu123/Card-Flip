@@ -1,12 +1,12 @@
-module random_start_ver(input clk, input resetn, input start, output [0:47]random_num, output done);
+module random_start_ver(input clk, input resetn, input start, output [0:47]random_num, output random_assign_busy);
     wire newstart;
+	 wire done;
     random_assign myrandass(.clk(clk), .resetn(resetn), .start(newstart), .random_num(random_num), .done(done));
-    modify_start mymodify(.clk(clk), .resetn(resetn), .start(start), .done(done), .newstart(newstart));
+    modify_start mymodify(.clk(clk), .resetn(resetn), .start(start), .done(done), .newstart(newstart), .random_assign_busy(random_assign_busy));
 endmodule
 
-module modify_start(input clk, input resetn, input start, input done, output reg newstart);
+module modify_start(input clk, input resetn, input start, input done, output reg newstart, output reg random_assign_busy);
     // 必须done才能输出
-	 reg random_assign_busy;
     always @(posedge clk)
     begin
         if(!resetn)begin
