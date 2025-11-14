@@ -1,0 +1,11 @@
+# add wave *
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run -all
+# Done at time 1530000, results: 1, 7, 0, 6, 7, 5, 6, 4, 5, 3, 4, 2, 3, 1, 2, 0
+# Done at time 2730000, results: 6, 1, 7, 2, 0, 3, 1, 4, 2, 5, 3, 6, 4, 7, 5, 0
+# Done at time 3630000, results: 1, 6, 4, 1, 7, 4, 2, 7, 5, 2, 0, 5, 3, 0, 6, 3
+# Done at time 5830000, results: 6, 7, 5, 6, 4, 5, 3, 4, 2, 3, 1, 2, 0, 1, 7, 0
+# Done at time 7030000, results: 3, 7, 4, 0, 5, 1, 6, 2, 7, 3, 0, 4, 1, 5, 2, 6
