@@ -45,7 +45,7 @@ module vga_demo16(
     wire [N_OBJ * 10 - 1:0] inst_x_bus;      // 10 input for x
     wire [N_OBJ * 9 - 1:0]  inst_y_bus;      // 9 input for y
     wire [N_OBJ * COLOR_DEPTH - 1:0] inst_color_bus;  // COLOR_DEPTH is the num of input    
-	 reg [2:0] card_num;
+	 wire [0:47] card_nums;
     wire [COLOR_DEPTH * 9 - 1 : 0] mem_color_bus;
 	 wire [WIDTH_BIT * 16 - 1 : 0] mem_x_bus;
 	 wire [HEIGHT_BIT * 16 - 1 : 0] mem_y_bus;
@@ -82,7 +82,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX1]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX1 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX1 * WIDTH_BIT +: WIDTH_BIT]),
@@ -105,7 +105,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX2]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX2 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX2 * WIDTH_BIT +: WIDTH_BIT]),
@@ -128,7 +128,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX3]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX3 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX3 * WIDTH_BIT +: WIDTH_BIT]),
@@ -151,7 +151,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX4]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX4 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX4 * WIDTH_BIT +: WIDTH_BIT]),
@@ -174,7 +174,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX5]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX5 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX5 * WIDTH_BIT +: WIDTH_BIT]),
@@ -197,7 +197,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX6]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX6 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX6 * WIDTH_BIT +: WIDTH_BIT]),
@@ -220,7 +220,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX7]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX7 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX7 * WIDTH_BIT +: WIDTH_BIT]),
@@ -243,7 +243,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX8]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX8 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX8 * WIDTH_BIT +: WIDTH_BIT]),
@@ -266,7 +266,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX9]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX9 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX9 * WIDTH_BIT +: WIDTH_BIT]),
@@ -289,7 +289,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX10]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX10 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX10 * WIDTH_BIT +: WIDTH_BIT]),
@@ -312,7 +312,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX11]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX11 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX11 * WIDTH_BIT +: WIDTH_BIT]),
@@ -335,7 +335,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX12]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX12 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX12 * WIDTH_BIT +: WIDTH_BIT]),
@@ -358,7 +358,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX13]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX13 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX13 * WIDTH_BIT +: WIDTH_BIT]),
@@ -381,7 +381,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX14]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX14 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX14 * WIDTH_BIT +: WIDTH_BIT]),
@@ -404,7 +404,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX15]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX15 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX15 * WIDTH_BIT +: WIDTH_BIT]),
@@ -427,7 +427,7 @@ module vga_demo16(
         .Resetn(Resetn),
         .Clock(CLOCK_50),
         .draw(inst_go[IDX16]),
-		  .card_num(card_num),
+		  .card_num(card_nums[IDX16 * 3 +: 3]),
 		  .show(1'b1),
 		  .obj_color(mem_color_bus),
 		  .XC(mem_x_bus[IDX16 * WIDTH_BIT +: WIDTH_BIT]),
@@ -445,9 +445,10 @@ module vga_demo16(
 	// display 16 objects in sequenses
 	parameter N = N_OBJ;
 
-	wire keypressed = ~KEY[1];                  
+	wire main_start = ~KEY[1];
+	wire keypressed;                 
 	reg  [3:0] current_idx;        // 4 digit num represent 16 objects
-	reg  busy;
+	reg  show_busy;
 	reg  push;                         // sign for go, go for printing next oject
 
 	reg [N-1:0] inst_go;                // 16 digit go sign
@@ -459,16 +460,15 @@ module vga_demo16(
 
 	always @(posedge CLOCK_50) begin
 		 if(!Resetn) begin
-			  busy <= 1'b0;
+			  show_busy <= 1'b0;
 			  current_idx <= 4'b0000;
-			  card_num <= 3'b000;
 			  push <= 1'b0;
 		 end 
 		 else begin
 			  push <= 1'b0;
-			  if(!busy) begin
+			  if(!show_busy) begin
 					if (keypressed) begin
-						 busy <= 1'b1;
+						 show_busy <= 1'b1;
 						 current_idx <= 4'b0000;
 						 push <= 1'b1;                 // print the first one 
 					end
@@ -477,8 +477,7 @@ module vga_demo16(
 					// if current one is done, then move to next one
 					if (inst_done[current_idx]) begin   // if this object is done
 						 if(current_idx == N-1) begin
-							  busy <= 1'b0;             // all done
-							  card_num[0] <= ~card_num[0];
+							  show_busy <= 1'b0;             // all done
 						 end else begin
 							  current_idx <= current_idx + 1'b1;
 							  push <= 1'b1;             // reset the push to be one, next one can go
@@ -523,4 +522,75 @@ module vga_demo16(
 		defparam MEM2.n = COLOR_DEPTH;
 		defparam MEM2.Mn = WIDTH_BIT + HEIGHT_BIT;
 		defparam MEM2.INIT_FILE = "./MIF/angry.mif";
+		
+	object_mem MEM3 ({YC,XC}, CLOCK_50, mem_color_bus[IDX3 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM3.n = COLOR_DEPTH;
+		defparam MEM3.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM3.INIT_FILE = "./MIF/laugh.mif";
+		
+	object_mem MEM4 ({YC,XC}, CLOCK_50, mem_color_bus[IDX4 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM4.n = COLOR_DEPTH;
+		defparam MEM4.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM4.INIT_FILE = "./MIF/sad.mif";
+		
+	object_mem MEM5 ({YC,XC}, CLOCK_50, mem_color_bus[IDX5 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM5.n = COLOR_DEPTH;
+		defparam MEM5.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM5.INIT_FILE = "./MIF/reject.mif";
+		
+	object_mem MEM6 ({YC,XC}, CLOCK_50, mem_color_bus[IDX6 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM6.n = COLOR_DEPTH;
+		defparam MEM6.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM6.INIT_FILE = "./MIF/cool.mif";
+		
+	object_mem MEM7 ({YC,XC}, CLOCK_50, mem_color_bus[IDX7 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM7.n = COLOR_DEPTH;
+		defparam MEM7.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM7.INIT_FILE = "./MIF/shock.mif";
+		
+	object_mem MEM8 ({YC,XC}, CLOCK_50, mem_color_bus[IDX8 * COLOR_DEPTH +: COLOR_DEPTH]);
+		defparam MEM8.n = COLOR_DEPTH;
+		defparam MEM8.Mn = WIDTH_BIT + HEIGHT_BIT;
+		defparam MEM8.INIT_FILE = "./MIF/six.mif";
+		
+	// random generator
+	wire rand_busy, rand_start;
+	random_start_ver Random_Generator (.clk(CLOCK_50), .resetn(Resetn), .start(rand_start), .random_num(card_nums), .random_assign_busy(rand_busy));
+	
+	control CRTL (.clock(CLOCK_50), .resetn(Resetn), .main_start(main_start), .rand_busy(rand_busy), .show_busy(show_busy), 
+							.rand_start(rand_start), .update_start(keypressed));
+endmodule
+
+module control (
+	input wire clock,
+	input wire resetn,
+	input wire main_start,
+	input wire rand_busy,
+	input wire show_busy,
+	
+	output wire rand_start,
+	output wire update_start
+);
+
+	parameter idle = 2'b00, press = 2'b01, update = 2'b10, wait_update = 2'b11;
+	
+	reg [1:0] current_s, next_s;
+	
+	always @(*)
+		case (current_s)
+			idle: if (main_start) next_s = press; else next_s = idle;
+			press: if (main_start || rand_busy) next_s = press; else next_s = update;
+			update: next_s = wait_update;
+			wait_update: if (show_busy) next_s = wait_update; else next_s = idle;
+		endcase
+		
+	always @(posedge clock)
+		if (!resetn)
+			current_s <= idle;
+		else
+			current_s <= next_s;
+			
+	assign rand_start = (current_s == press) ? main_start : 1'b0;
+	assign update_start = (current_s == update);
+
 endmodule
