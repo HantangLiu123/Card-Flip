@@ -1,0 +1,15 @@
+# add wave *
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run -all
+# time = 0 | mouse_x =    0 mouse_y =   0 left_button = 0 card_num_out = 0 click_done = 0
+# time = 20000 | mouse_x =  640 mouse_y = 480 left_button = 1 card_num_out = 0 click_done = 0
+# time = 40000 | mouse_x =  640 mouse_y = 480 left_button = 0 card_num_out = 0 click_done = 0
+# time = 60000 | mouse_x =  374 mouse_y =  77 left_button = 1 card_num_out = 0 click_done = 0
+# time = 70000 | mouse_x =  374 mouse_y =  77 left_button = 1 card_num_out = 1 click_done = 1
+# time = 80000 | mouse_x =  374 mouse_y =  77 left_button = 0 card_num_out = 1 click_done = 1
+# time = 90000 | mouse_x =  374 mouse_y =  77 left_button = 0 card_num_out = 1 click_done = 0
+# time = 100000 | mouse_x =  156 mouse_y =  77 left_button = 1 card_num_out = 1 click_done = 0
+# time = 120000 | mouse_x =  156 mouse_y =  77 left_button = 0 card_num_out = 1 click_done = 0
