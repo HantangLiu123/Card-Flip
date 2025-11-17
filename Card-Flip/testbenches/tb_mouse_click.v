@@ -4,12 +4,11 @@ module tb_mouse_click;
 	reg clock, left_button;
 	reg [9:0] mouse_x;
 	reg [8:0] mouse_y;
-	reg [0:47] card_num;
 	reg [0:15] show;
-	wire [2:0] card_num_out;
+	wire [3:0] card_idx_out;
 	wire click_done;
 	
-	mouse_click MC (clock, mouse_x, mouse_y, left_button, card_num, show, card_num_out, click_done);
+	mouse_click MC (clock, mouse_x, mouse_y, left_button, show, card_idx_out, click_done);
 	
 	integer i, j;
 	
@@ -20,9 +19,6 @@ module tb_mouse_click;
 		mouse_y = 9'd0;
 		show = 16'b0;
 		show[0] = 1'b1;
-		for (i = 0; i < 16; i = i + 1) begin
-			card_num[3 * i +: 3] = i / 2;
-		end
 	end
 	
 	initial begin
@@ -37,7 +33,7 @@ module tb_mouse_click;
 	
 	initial begin
 		// monitor
-		$monitor("time = %0t | mouse_x = %d mouse_y = %d left_button = %b card_num_out = %d click_done = %b", $time, mouse_x, mouse_y, left_button, card_num_out, click_done);
+		$monitor("time = %0t | mouse_x = %d mouse_y = %d left_button = %b card_idx_out = %d click_done = %b", $time, mouse_x, mouse_y, left_button, card_idx_out, click_done);
 	end
 	
 	initial begin

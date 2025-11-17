@@ -1,4 +1,4 @@
-module mouse_click (clock, mouse_x, mouse_y, left_button, card_num, show, card_num_out, click_done);
+module mouse_click (clock, mouse_x, mouse_y, left_button, show, card_idx_out, click_done);
 	parameter nX = 10;
 	parameter nY = 9;
 	
@@ -22,9 +22,8 @@ module mouse_click (clock, mouse_x, mouse_y, left_button, card_num, show, card_n
 	input [nX-1:0] mouse_x;
 	input [nY-1:0] mouse_y;
 	input left_button;
-	input [0:47] card_num;
 	input [0:15] show;
-	output reg [2:0] card_num_out;
+	output reg [3:0] card_idx_out;
 	output reg click_done;
 	
 	reg on_card;
@@ -40,7 +39,7 @@ module mouse_click (clock, mouse_x, mouse_y, left_button, card_num, show, card_n
 		for (idx = 0; idx < 16; idx = idx + 1)
 			if (mouse_x > IX[idx] - 32 && mouse_x < IX[idx] + 32 && mouse_y > IY[idx] - 32 && mouse_y < IY[idx] + 32 && !show[idx]) begin
 				on_card = 1'b1;
-				card_idx_on = card_num[idx * 3 +: 3];
+				card_idx_on = idx;
 			end
 	end
 	
@@ -48,7 +47,7 @@ module mouse_click (clock, mouse_x, mouse_y, left_button, card_num, show, card_n
 		click_done <= 1'b0;
 		if (on_card && left_button) begin
 			click_done <= 1'b1;
-			card_num_out <= card_idx_on;
+			card_idx_out <= card_idx_on;
 		end
 	end
 
