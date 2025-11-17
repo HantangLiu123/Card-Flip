@@ -15,15 +15,15 @@ module game (clock, resetn, game_start, rand_busy, mouse_x, mouse_y, left_button
 	input [0:47] card_num_reg;
 	input [0:15] show_reg;
 	
-	output rand_start; // tell the random generator to start
-	output load_card; // tell the card register to load the card for this game
-	output resetn_show; // reset the show register
-	output resetn_timer; // reset the game timer
-	output update_start; // to start updating the screen
-	output timer_start, timer_end; // to start and end the game timer
-	output E_show; // enable the update of the show register
-	output status_show; // the status for updating the show register
-	output [3:0] card_show; // tell the show register that which card should be changed
+	output reg rand_start; // tell the random generator to start
+	output reg load_card; // tell the card register to load the card for this game
+	output reg resetn_show; // reset the show register
+	output reg resetn_timer; // reset the game timer
+	output reg update_start; // to start updating the screen
+	output reg timer_start, timer_end; // to start and end the game timer
+	output reg E_show; // enable the update of the show register
+	output reg status_show; // the status for updating the show register
+	output reg [3:0] card_show; // tell the show register that which card should be changed
 	
 	parameter idle = 5'd0, start_pressed = 5'd1, loading_card = 5'd2, update_card_1 = 5'd3;
 	parameter wait_update_1 = 5'd4, wait_click_1 = 5'd5, process_info_1 = 5'd6;
@@ -42,6 +42,9 @@ module game (clock, resetn, game_start, rand_busy, mouse_x, mouse_y, left_button
 	wire [3:0] card_idx_out; // idx out of the mouse click
 	wire click_done;
 	
+	wire game_end = (show_reg == 16'b1111111111111111);
+	wire same_card = (card_num_reg[3 * card1 +: 3] == card_num_reg[3 * card2 +: 3]);
+	
 	mouse_click MC (
 		.clock(clock),
 		.mouse_x(mouse_x),
@@ -58,6 +61,116 @@ module game (clock, resetn, game_start, rand_busy, mouse_x, mouse_y, left_button
 		.enable(E_wait_cnt),
 		.done(done_wait_cnt)
 	);
+	
+	// state change
+	always @(*) begin
+		case (current_s)
+			idle: if (game_start) next_s = start_pressed; else next_s = idle;
+			start_pressed: if (game_start || rand_busy) next_s = start_pressed; else next_s = loading_card;
+			loading_card: next_s = update_card_1;
+			update_card_1: next_s = wait_update_1;
+			wait_update_1: if (show_busy) next_s = wait_update_1; else next_s = wait_click_1;
+			wait_click_1: if (game_end)
+									next_s = end_state;
+								else if (click_done)
+									next_s = process_info_1;
+								else
+									next_s = wait_click_1;
+			process_info_1: next_s = update_card_2;
+			update_card_2: next_s = wait_update_2;
+			wait_update_2: if (show_busy) next_s = wait_update_2; else next_s = wait_click_2;
+			wait_click_2: if (click_done) next_s = process_info_2; else next_s = wait_click_2;
+			process_info_2: next_s = update_card_3;
+			update_card_3: next_s = wait_update_3;
+			wait_update_3: if (show_busy)
+									next_s = wait_update_3;
+								else if (same_card)
+									next_s = wait_click_1;
+								else
+									next_s = wait_1sec;
+			wait_1sec: if (done_wait_cnt) next_s = flip_back_1; else next_s = wait_1sec;
+			flip_back_1: next_s = flip_back_2;
+			flip_back_2: next_s = update_card_4;
+			update_card_4: next_s = wait_update_4;
+			wait_update_4: if (show_busy) next_s = wait_update_4; else next_s = wait_click_1;
+			end_state: next_s = idle;
+			default: next_s = 5'bxxxxx;
+		endcase
+	end
+	
+	// update the state
+	always @(posedge clock) begin
+		if (!resetn) begin
+			current_s <= idle;
+			card1 <= 4'b0;
+			card2 <= 4'b0;
+		end else begin
+			current_s <= next_s;
+			
+			// store card 1 and card 2 in the corresponding state
+			if (current_s == process_info_1)
+				card1 <= card_idx_out;
+			else if (current_s == process_info_2)
+				card2 <= card_idx_out;
+		end
+	end
+	
+	// set the output for each state
+	always @(*) begin
+		// defaults
+		rand_start = 1'b0; load_card = 1'b0; 
+		resetn_show = 1'b1; resetn_timer = 1'b1;
+		update_start = 1'b0;
+		timer_start = 1'b0; timer_end = 1'b0;
+		E_show = 1'b0;
+		resetn_wait_cnt = 1'b1; E_wait_cnt = 1'b0;
+		
+		status_show = 1'b0;
+		card_show = 4'b0;
+		
+		case (current_s)
+			idle: ;
+			start_pressed: rand_start = game_start;
+			loading_card: begin load_card = 1'b1; resetn_show = 1'b0; resetn_timer = 1'b0; end
+			update_card_1: begin update_start = 1'b1; timer_start = 1'b1; end
+			wait_update_1: ;
+			wait_click_1: resetn_wait_cnt = 1'b0;
+			process_info_1: 
+				begin
+					E_show = 1'b1;
+					status_show = 1'b1;
+					card_show = card_idx_out;
+				end
+			update_card_2: update_start = 1'b1;
+			wait_update_2: ;
+			wait_click_2: ;
+			process_info_2:
+				begin
+					E_show = 1'b1;
+					status_show = 1'b1;
+					card_show = card_idx_out;
+				end
+			update_card_3: update_start = 1'b1;
+			wait_update_3: ;
+			wait_1sec: E_wait_cnt = 1'b1;
+			flip_back_1: 
+				begin
+					E_show = 1'b1;
+					status_show = 1'b0;
+					card_show = card1;
+				end
+			flip_back_2:
+				begin
+					E_show = 1'b1;
+					status_show = 1'b0;
+					card_show = card2;
+				end
+			update_card_4: update_start = 1'b1;
+			wait_update_4: ;
+			end_state: timer_end = 1'b1;
+			default: ;
+		endcase
+	end
 	
 endmodule
 
@@ -109,7 +222,7 @@ module mouse_click (clock, mouse_x, mouse_y, left_button, show, card_idx_out, cl
 	output reg click_done;
 	
 	reg on_card;
-	reg [2:0] card_idx_on;
+	reg [3:0] card_idx_on;
 	
 	integer idx;
 	

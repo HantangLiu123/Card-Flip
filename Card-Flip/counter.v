@@ -37,9 +37,9 @@ module counter(input game_start, input game_end, input clk, input resetn, output
         bcd3 = dout % 10;
     end
 
-    seg7_decoder seg1(.N(bcd1), .display(HEX0));
+    seg7_decoder seg1(.N(bcd3), .display(HEX0));
     seg7_decoder seg2(.N(bcd2), .display(HEX1));
-    seg7_decoder seg3(.N(bcd3), .display(HEX2));
+    seg7_decoder seg3(.N(bcd1), .display(HEX2));
     seg7_decoder seg4(.N(4'd0), .display(HEX3));
     seg7_decoder seg5(.N(4'd0), .display(HEX4));
     seg7_decoder seg6(.N(4'd0), .display(HEX5));
